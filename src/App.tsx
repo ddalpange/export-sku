@@ -35,6 +35,8 @@ function App() {
                     오직 웹페이지 안에서 또 다른 시트를 생성하는 것에만
                     사용돼요.
                   </li>
+                  <li>SKU - 재고 관리 최소 단위</li>
+                  <li>Product - 판매 가능 최소 단위</li>
                   <li>
                     재고를 관리하는 최소 단위를 SKU(Stock Keeping Per Unit)라고
                     불러요. 하지만 보통은 Cafe24, 스마트스토어 등 외부 스토어에
