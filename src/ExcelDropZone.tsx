@@ -1,14 +1,13 @@
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import * as xlsx from "xlsx";
-import { Paper, Box, Button, Typography } from "@mui/material";
 import {
   NaverSheetData,
   ProductSheetData,
   ResultSheetData,
   SkuSheetData,
 } from "./SheetData";
-import { getSimilarity } from "./utils";
 import { downloadExcel } from "./downloadExcel";
 type WorkBook = {
   title: string;
@@ -68,11 +67,11 @@ export const ExcelDropzone = () => {
       id: item.ID,
       name: item.상품명,
       sellingItems: item.매핑.split(",").map((str) => {
-        const [skuId, quantity] = str.split("-");
+        const [skuId, quantity] = str.split("_");
         const sku = skuList.find((s) => s.ID.toString() === skuId.toString());
         if (!sku) {
           throw Error(
-            `${item.상품명}과 매칭되는 최소 단위를 찾을 수 없습니다. ${str}`
+            `셀링 테이블 -> ${item.상품명}에서 매칭되는 SKU를 찾을 수 없습니다. ${str}`
           );
         }
         return {
@@ -92,22 +91,23 @@ export const ExcelDropzone = () => {
     for (const naverWorkBook of naverWorkBooks) {
       const naverSheetData = naverWorkBook.sheets[0]!.data as NaverSheetData[];
       for (const row of naverSheetData) {
-        let product = products[0];
-        let similarity = getSimilarity(row.상품명, product.name);
-        products.forEach((item) => {
-          const compare = getSimilarity(row.상품명, item.name);
-          if (compare > similarity) {
-            similarity = compare;
-            product = item;
-          }
+        const product = products.find((item) => {
+          return row.옵션정보
+            .replace(/\s/g, "")
+            .includes(item.name.replace(/\s/g, ""));
         });
+        if (!product) {
+          throw Error(
+            `네이버 시트 -> ${row.옵션정보}를 찾을 수 없어요. 셀링 테이블에 상품을 추가해 주세요. (이름 포함 필수)`
+          );
+        }
         product.sellingItems.forEach((sellingItem) => {
           result.push({
             날짜: row.결제일,
             "받는사람(수취인)": row.구매자명,
             전화번호: row.수취인연락처1,
             상품명: sellingItem.name,
-            수량: sellingItem.quantity,
+            수량: parseInt(sellingItem.quantity) * row.수량,
             우편번호: row.우편번호,
             주소: row.통합배송지,
             배송메시지: row.배송메세지,

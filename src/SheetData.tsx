@@ -46,7 +46,7 @@ export type ResultSheetData = {
   주소: string;
   상세주소: string;
   상품명: string;
-  수량: string;
+  수량: number;
   배송메시지: string;
   우편번호: string;
 };

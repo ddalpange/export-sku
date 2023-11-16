@@ -2,6 +2,7 @@ import { Container, Paper, CssBaseline, Box, Typography } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "./App.css";
 import { ExcelDropzone } from "./ExcelDropZone";
+import { ErrorView } from "./ErrorView";
 
 function App() {
   const theme = createTheme({});
@@ -42,10 +43,16 @@ function App() {
                     스토어에서 제공한 Product 단위의 발주 시트를 SKU 단위의 발주
                     시트로 바꿔줘요.
                   </li>
+                  <li>
+                    네이버 시트의 옵션정보는 꼭 하나의 상품 이름을 포함해야해요.
+                    (공백제외)
+                  </li>
                 </ul>
               </Typography>
             </Box>
-            <ExcelDropzone />
+            <ErrorView>
+              <ExcelDropzone />
+            </ErrorView>
           </Paper>
         </Container>
       </ThemeProvider>
